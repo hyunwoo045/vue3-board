@@ -1,14 +1,13 @@
 <template>
-  <h1>{{ message }}</h1>
-  <HelloWorld />
+  <Header />
+  <RouterView />
 </template>
 
 <script>
-import HelloWorld from '~/components/HelloWorld'
-
+import Header from '~/components/Header';
 export default ({
   components: {
-    HelloWorld
+    Header,
   },
 
   data() {
