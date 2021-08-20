@@ -22,6 +22,11 @@
 import Contents from '~/data/contents.json';
 
 export default {
+  created() {
+    this.$http.get('/api/test').then((response) => {
+      console.log(response);
+    })
+  },
   computed: {
     contents() {
       const res = JSON.parse(JSON.stringify(Contents));
