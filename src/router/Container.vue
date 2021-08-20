@@ -7,7 +7,7 @@
         :key="content">
         <span class="content-id">{{ content.id }}</span>
         <span class="content-title">{{ content.title }}</span>
-        <span class="content-author">{{ content.author }}</span>
+        <span class="content-author">{{ content.author_id }}</span>
       </div>
     </div>
     <div class="btn-container">
@@ -19,20 +19,23 @@
 </template>
 
 <script>
-import Contents from '~/data/contents.json';
-
 export default {
+  data() {
+    return {
+      contents: [],
+    }
+  },
   created() {
-    this.$http.get('/api/test').then((response) => {
-      console.log(response);
+    this.$http.get('/api/home').then((response) => {
+      this.contents = response.data;
     })
   },
-  computed: {
-    contents() {
-      const res = JSON.parse(JSON.stringify(Contents));
-      return res;
-    }
-  }
+  // computed: {
+  //   contents() {
+  //     const res = JSON.parse(JSON.stringify(Contents));
+  //     return res;
+  //   }
+  // }
 }
 </script>
 
