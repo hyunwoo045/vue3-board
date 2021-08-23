@@ -2,6 +2,7 @@
   <div class="container">
     <div class="input-area top">
       <input
+        v-model="author"
         type="text"
         class="name"
         placeholder="닉네임" />
@@ -12,12 +13,15 @@
     </div>
     <div class="input-area title">
       <input
+        v-model="title"
         type="text"
         class="title"
         placeholder="제목" />
     </div>
     <div class="input-area description">
-      <textarea class="description"></textarea>
+      <textarea
+        v-model="description"
+        class="description"></textarea>
     </div>
     
     <div class="button-area">
@@ -50,8 +54,14 @@ export default {
       this.$router.go(-1);
     },
     createHandler() {
-      this.$http.get('/api/create?id=2').then(response => {
-        console.log(response);
+      this.$http.post('/api/create', {
+        author: this.author,
+        password: this.password,
+        title: this.title,
+        description: this.description,
+      }).then(response => {
+        console.log(response.data);
+        this.$router.push('/');
       })
     }
   }

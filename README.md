@@ -150,7 +150,7 @@ export default {
 
 ### Read
 
-글 목록에서 글을 클릭 시 글 상세보기 기능 구현합니다.
+글 목록에서 글을 클릭 시 글 상세보기 기능을 구현합니다.
 
 클릭 시 vue-router 의 router-link 를 통해 페이지가 변환되고 글 상세 정보가 출력됩니다.
 
@@ -282,3 +282,59 @@ router.get("/", (req, res) => {
 - 내장 모듈인 `url` 을 받아 query문을 파싱하는 데 사용합니다.
 - `url.parse(URL, ).query` 는 url의 쿼리파트에 해당하는 부분을 객체로 반환합니다.
 - `url.parse(URL, ).query.id` 를 통해 front 에서 전달받은 id 값을 이용하여 데이터베이스에 쿼리를 전송 및 데이터를 전달받아 응답을 보냅니다.
+
+### Create
+
+글쓰기 버튼을 통해 이동된 페이지에서 글 작성 후 확인 버튼을 클릭 하였을 때에 데이터베이스에 새로운 글 내용이 업데이트 되도록 구현합니다.
+
+`Add` 컴포넌트에 `createHandler()` 메서드를 추가합니다. <br />
+메서드 내용은 아래와 같습니다.
+
+```javascript
+createHandler() {
+  this.$http.post('/api/create', {
+    author: this.author,
+    password: this.password,
+    title: this.title,
+    description: this.description,
+  }).then(response => {
+    console.log(response.data);
+    this.$router.push('/');
+  })
+}
+```
+
+- axios 패키지의 post 기능을 이용하여 POST 방식으로 서버에 데이터를 전송하며 요청합니다.
+- 응답을 받을 경우 다시 홈 화면으로 이동합니다.
+
+백엔드 부분에 `create` 라우터를 새로 만듭니다.
+
+```javascript
+// require part 생략 ...
+
+router.post("/", function (req, res) {
+  let title = req.body.title;
+  let description = req.body.description;
+  let author_id = 1;
+
+  let connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "111111",
+    database: "tutorial",
+  });
+  connection.connect();
+
+  connection.query(
+    `INSERT INTO topic (title, description, created, author_id) VALUES(?, ?, NOW(), ?)`,
+    [title, description, author_id],
+    (err) => {
+      if (err) throw err;
+      console.log("INSERTED SUCCESSFULLY");
+      res.send("Create Success!");
+    }
+  );
+});
+```
+
+- POST 방식으로 전달받은 데이터는 `req.body` 에 객체 형태로 저장되어 있습니다.
