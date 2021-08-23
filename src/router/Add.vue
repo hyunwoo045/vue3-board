@@ -9,10 +9,6 @@
         type="text"
         class="name"
         placeholder="닉네임" />
-      <input
-        type="password"
-        class="password"
-        placeholder="비밀번호" />
     </div>
     <div class="input-area title">
       <input
@@ -51,8 +47,8 @@ export default {
       default: '',
     },
     contentId: {
-      type: String,
-      default: '-1',
+      type: Number,
+      default: -1,
     },
     title: {
       type: String,
@@ -66,7 +62,6 @@ export default {
   data() {
     return {
       author: '',
-      password: '',
       curTitle: this.title,
       curDesc: this.description,
     }
@@ -77,9 +72,9 @@ export default {
     },
     createHandler() {
       this.$http.post('/api/create', {
+        mode: this.mode,
         id: this.contentId,
         author: this.author,
-        password: this.password,
         title: this.curTitle,
         description: this.curDesc,
       }).then(response => {

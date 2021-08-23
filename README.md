@@ -500,3 +500,28 @@ connection.query(`DELETE FROM topic WHERE id=${id}`, (err) => {
   res.send("Delete Completed");
 });
 ```
+
+### 레코드 구성 수정
+
+```sql
+CREATE TABLE contents (
+  id VARCHAR(11) NOT NULL AUTO_INCREMENT,
+  title VARCHAR(100) NOT NULL,
+  description TEXT NULL,
+  author VARCHAR(30) NOT NULL,
+  created DATETIME NOT NULL,
+  updated DATETIME NOT NULL,
+  PRIMARY KEY(id));
+
+CREATE TABLE comments (
+  id VARCHAR(11) NOT NULL,
+  author VARCHAR (30) NOT NULL,
+  description TEXT NOT NULL,
+  created DATETIME NOT NULL,
+  updated DATETIME NOT NULL,
+  content_id VARCHAR(11) NOT NULL,
+  PRIMARY KEY(id));
+```
+
+- 기존에 topics와 author가 분리되어 있던 것을 다시 합쳤습니다. 회원 정보에 대한 데이터를 관리하지 않기 때문입니다.
+- comments 테이블을 새로 생성하였습니다. content_id 에 대한 정보를 가져 어떤 글에 달린 댓글인지 확인 할 수 있도록 합니다.

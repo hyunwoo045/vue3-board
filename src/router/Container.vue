@@ -3,12 +3,12 @@
     <div class="contents">
       <div
         class="content"
-        v-for="content in contents"
-        :key="content"
+        v-for="(content, idx) in contents"
+        :key="idx"
         @click="readContent(content.id)">
         <span class="content-id">{{ content.id }}</span>
         <span class="content-title">{{ content.title }}</span>
-        <span class="content-author">{{ content.author_id }}</span>
+        <span class="content-author">{{ content.author }}</span>
       </div>
     </div>
     <div class="btn-container">
@@ -28,6 +28,7 @@ export default {
   },
   created() {
     this.$http.get('/api/home').then((response) => {
+      console.log(response)
       this.contents = response.data;
     })
   },
