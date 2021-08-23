@@ -141,3 +141,144 @@ export default {
   },
 };
 ```
+
+<br />
+
+## 8.23 목표
+
+- Frontend 요청에 의한 database CRUD 구현
+
+### Read
+
+글 목록에서 글을 클릭 시 글 상세보기 기능 구현합니다.
+
+클릭 시 vue-router 의 router-link 를 통해 페이지가 변환되고 글 상세 정보가 출력됩니다.
+
+```html
+<template>
+  <div class="container">
+    <div class="contents">
+      <div
+        class="content"
+        v-for="content in contents"
+        :key="content"
+        @click="readContent(content.id)"
+      >
+        <span class="content-id">{{ content.id }}</span>
+        <span class="content-title">{{ content.title }}</span>
+        <span class="content-author">{{ content.author_id }}</span>
+      </div>
+    </div>
+    <div class="btn-container">
+      <RouterLink to="/add">
+        <button>글쓰기</button>
+      </RouterLink>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    // data ...
+    // created ...
+    methods: {
+      readContent(id) {
+        this.$http.get(`/api/home?id=${id}`).then((response) => {
+          let data = response.data[0];
+          this.$router.push({
+            name: "Read",
+            params: {
+              title: data.title,
+              description: data.description,
+            },
+          });
+        });
+      },
+    },
+  };
+</script>
+```
+
+```html
+<div
+  class="content"
+  v-for="content in contents"
+  :key="content"
+  @click="readContent(content.id)"
+></div>
+```
+
+- 글 클릭 시 readContent 메서드로 글의 id 값을 전달합니다.
+
+```javascript
+this.$http.get(`/api/home?id=${id}`).then((response) => {
+  let data = response.data[0];
+  this.$router.push({
+    name: "Read",
+    params: {
+      title: data.title,
+      description: data.description,
+    },
+  });
+});
+```
+
+- `/api/home` 에 api query 로 id 값에 대한 요청을 보내어 응답을 전달 받습니다.
+- 전달받은 데이터는 vue-router 를 이용하여 read 페이지로 보냄과 동시에 필요한 데이터를 전달합니다. 전달 방식은 [참고 자료](https://velog.io/@skyepodium/vue-router%EB%A1%9C-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%84%EB%8B%AC%ED%95%98%EA%B8%B0-eskrsmr3) 를 참고 합니다.
+
+```html
+<template>
+  <div class="container">
+    <div class="read-title">{{ $route.params.title }}</div>
+    <div class="read-description">{{ $route.params.description }}</div>
+  </div>
+</template>
+```
+
+- `index.js` 에 `Read` 컴포넌트를 등록합니다 (코드 생략)
+- `Read.vue` 컴포넌트를 간략히 위와 같이 구현합니다.
+- `$route.params.속성명` 으로 전달받은 데이터를 사용할 수 있습니다.
+
+쿼리를 포함한 요청에 대한 처리를 하기 위해서 백엔드 파트의 `routes/home.js` 를 아래와 같이 수정합니다.
+
+```javascript
+// require part ...
+var url = require("url");
+
+router.get("/", (req, res) => {
+  var connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "111111",
+    database: "tutorial",
+  });
+  connection.connect();
+
+  let _url = req.url;
+  let queryData = url.parse(_url, true).query;
+
+  if (queryData.id === undefined) {
+    connection.query("SELECT * FROM topic", function (err, topic) {
+      if (err) {
+        throw err;
+      }
+      res.send(topic);
+    });
+  } else {
+    connection.query(
+      `SELECT * FROM topic WHERE id=?`,
+      [queryData.id],
+      function (err, topic) {
+        if (err) {
+          throw err;
+        }
+        res.send(topic);
+      }
+    );
+  }
+});
+```
+
+- 내장 모듈인 `url` 을 받아 query문을 파싱하는 데 사용합니다.
+- `url.parse(URL, ).query` 는 url의 쿼리파트에 해당하는 부분을 객체로 반환합니다.
+- `url.parse(URL, ).query.id` 를 통해 front 에서 전달받은 id 값을 이용하여 데이터베이스에 쿼리를 전송 및 데이터를 전달받아 응답을 보냅니다.

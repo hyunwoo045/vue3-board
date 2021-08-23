@@ -4,7 +4,8 @@
       <div
         class="content"
         v-for="content in contents"
-        :key="content">
+        :key="content"
+        @click="readContent(content.id)">
         <span class="content-id">{{ content.id }}</span>
         <span class="content-title">{{ content.title }}</span>
         <span class="content-author">{{ content.author_id }}</span>
@@ -30,12 +31,20 @@ export default {
       this.contents = response.data;
     })
   },
-  // computed: {
-  //   contents() {
-  //     const res = JSON.parse(JSON.stringify(Contents));
-  //     return res;
-  //   }
-  // }
+  methods: {
+    readContent(id) {
+      this.$http.get(`/api/home?id=${id}`).then(response => {
+        let data = response.data[0]
+        this.$router.push({
+          name: 'Read',
+          params: {
+            title: data.title,
+            description: data.description
+          }
+        })
+      })
+    }
+  }
 }
 </script>
 
@@ -80,12 +89,6 @@ export default {
     height: 10vh;
     display: flex;
     align-items: center;
-    // button {
-    //   // width: 70px;
-    //   // height: 40px;
-    //   // border-radius: 10px;
-    //   margin-left: 30px;
-    // }
   }
 }
 </style>

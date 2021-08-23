@@ -26,7 +26,9 @@
         @click="back">
         취소
       </button>
-      <button class="submit">
+      <button
+        class="submit"
+        @click="createHandler">
         확인
       </button>
     </div>
@@ -46,6 +48,11 @@ export default {
   methods: {
     back() {
       this.$router.go(-1);
+    },
+    createHandler() {
+      this.$http.get('/api/create?id=2').then(response => {
+        console.log(response);
+      })
     }
   }
 }
