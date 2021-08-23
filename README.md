@@ -17,6 +17,7 @@ Vue.js 와 데이터베이스(MySQL), 클라우드 서버(AWS) 학습을 주 목
 ### 미완료
 
 - 댓글 수정
+- 글 삭제 시 comments 스키마의 내용도 삭제 필요
 
 ### 버그
 
@@ -114,3 +115,32 @@ router.post("/", function (req, res) {
 ```
 
 위와 같이 각 기능에 필요한 통신 방식을 채택하여 기능들을 구현하였습니다.
+
+### 데이터 구성
+
+데이터베이스 스키마, 레코드 형식을 수정합니다.
+
+아래 SQL 문을 참고해 주세요.
+
+```SQL
+CREATE TABLE contents (
+  id VARCHAR(11) NOT NULL AUTO_INCREMENT,
+  title VARCHAR(100) NOT NULL,
+  description TEXT NULL,
+  author VARCHAR(30) NOT NULL,
+  created DATETIME NOT NULL,
+  updated DATETIME NOT NULL,
+  PRIMARY KEY(id));
+
+CREATE TABLE comments (
+  id VARCHAR(11) NOT NULL,
+  author VARCHAR (30) NOT NULL,
+  description TEXT NOT NULL,
+  created DATETIME NOT NULL,
+  updated DATETIME NOT NULL,
+  content_id VARCHAR(11) NOT NULL,
+  PRIMARY KEY(id));
+```
+
+- 기존 topics 와 author 테이블을 통합하여 contents 테이블을 만들었습니다. 회원 정보에 대해서 다루지 않기 때문에 불필요하게 나누어져 있다고 생각하였습니다.
+- comments 테이블을 따로 만들어 row 에 데이터를 쌓고, content_id 를 기반으로 연결되도록 하였습니다.
