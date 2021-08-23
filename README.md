@@ -1,6 +1,6 @@
 # 게시판 만들기
 
-Vue.js 와 데이터베이스 (MySQL)의 학습을 주 목적으로 진행하는 프로젝트 입니다.
+Vue.js 와 데이터베이스(MySQL), 클라우드 서버(AWS) 학습을 주 목적으로 진행하는 프로젝트 입니다.
 
 문서는 공부한 내용을 정리하는 방식으로 작성합니다.
 
@@ -338,3 +338,135 @@ router.post("/", function (req, res) {
 ```
 
 - POST 방식으로 전달받은 데이터는 `req.body` 에 객체 형태로 저장되어 있습니다.
+
+### Update
+
+글 상세 정보 페이지 아래의 수정 버튼을 클릭 시 글 수정할 수 있는 페이지로 이동합니다. 확인 버튼을 누르면 해당 글의 정보가 수정됩니다.
+
+기존에 있던 `Add.vue` 컴포넌트를 재활용합니다.
+
+```html
+<script>
+  export default {
+    name: "Add",
+    props: {
+      mode: {
+        type: String,
+        default: "",
+      },
+      contentId: {
+        type: String,
+        default: "-1",
+      },
+      title: {
+        type: String,
+        default: "",
+      },
+      description: {
+        type: String,
+        default: "",
+      },
+    },
+
+    // ... 아래 생략
+  };
+</script>
+```
+
+- `props` 데이터로 모드(신규/수정), 글의 id, 제목, 내용을 받을 수 있도록 업데이트 합니다. 글 상세정보 페이지를 통해 이 컴포넌트로 들어왔을 경우, 데이터베이스에 INSERT 명령이 아닌 UPDATE 명령을 하도록 하기 위함이며 또한 기존의 제목, 내용을 입력란에 그대로 두게 하기 위함입니다.
+- 기존처럼 홈 페이지에서 글쓰기 버튼을 통해 컴포넌트에 들어온 경우 글 id의 default 값인 -1 이 서버에 전송되어
+
+```html
+<!-- 생략 -->
+<div class="input-area title">
+  <input v-model="curTitle" type="text" class="title" placeholder="제목" />
+</div>
+<div class="input-area description">
+  <textarea v-model="curDesc" class="description"></textarea>
+</div>
+
+<script>
+  export default {
+    // 생략
+    data() {
+      return {
+        author: "",
+        password: "",
+        curTitle: this.title,
+        curDesc: this.description,
+      };
+    },
+  };
+</script>
+```
+
+- 입력란과 그대로 양방향 통신을 할 때에 태그에 props 데이터를 사용할 수 없으므로, data 속성에 초기화한 후 사용합니다.
+
+`Read.vue` 컴포넌트를 업데이트 합니다. 수정 버튼을 클릭한 경우 `Add` 컴포넌트로 이동하며 글의 id, 제목, 내용을 함께 전달하며 현재 모드가 수정임을 알리도록 `mode: "modify"` 또한 props 로 전달합니다.
+
+```html
+<template>
+    <!-- 생략 -->
+
+    <!-- 추가 -->
+    <div class="button-area">
+      <button @click="modifyHandler">수정</button>
+      <button @click="deleteHandler">삭제</button>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    methods: {
+      modifyHandler() {
+        let id = this.$route.params.id;
+        let title = this.$route.params.title;
+        let description = this.$route.params.description;
+
+        this.$router.push({
+          name: "Add",
+          params: {
+            mode: "modify",
+            contentId: id,
+            title,
+            description,
+          },
+        });
+      },
+      deleteHandler() {
+        console.log("Delete");
+      },
+    },
+  };
+</script>
+```
+
+백엔드의 `create.js` 를 수정합니다. 전달받은 id 값이 -1 일 경우는 신규 추가, 아닌 경우 수정할 수 있도록 합니다.
+
+```javascript
+router.post("/", function (req, res) {
+  // 생략 ...
+  if (id === "-1") {
+    connection.query(
+      `INSERT INTO topic (title, description, created, author_id) VALUES(?, ?, NOW(), ?)`,
+      [title, description, author_id],
+      (err) => {
+        if (err) throw err;
+        console.log("INSERTED SUCCESSFULLY");
+        res.send("Create Success!");
+      }
+    );
+  } else {
+    connection.query(
+      `UPDATE topic SET title=?, description=?, author_id=? WHERE id=${id}`,
+      [title, description, author_id],
+      (err) => {
+        if (err) throw err;
+        console.log("UPDATED SUCCESSFULLY");
+        res.send("Update Success!");
+      }
+    );
+  }
+});
+```

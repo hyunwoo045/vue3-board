@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+    <div class="input-area mode">
+      {{ mode === 'modify' ? "글 수정" : "글 생성" }}
+    </div>
     <div class="input-area top">
       <input
         v-model="author"
@@ -13,14 +16,14 @@
     </div>
     <div class="input-area title">
       <input
-        v-model="title"
+        v-model="curTitle"
         type="text"
         class="title"
         placeholder="제목" />
     </div>
     <div class="input-area description">
       <textarea
-        v-model="description"
+        v-model="curDesc"
         class="description"></textarea>
     </div>
     
@@ -41,12 +44,31 @@
 
 <script>
 export default {
+  name: 'Add',
+  props: {
+    mode: {
+      type: String,
+      default: '',
+    },
+    contentId: {
+      type: String,
+      default: '-1',
+    },
+    title: {
+      type: String,
+      default: '',
+    },
+    description: {
+      type: String,
+      default: '',
+    }
+  },
   data() {
     return {
       author: '',
       password: '',
-      title: '',
-      description: '',
+      curTitle: this.title,
+      curDesc: this.description,
     }
   },
   methods: {
@@ -55,10 +77,11 @@ export default {
     },
     createHandler() {
       this.$http.post('/api/create', {
+        id: this.contentId,
         author: this.author,
         password: this.password,
-        title: this.title,
-        description: this.description,
+        title: this.curTitle,
+        description: this.curDesc,
       }).then(response => {
         console.log(response.data);
         this.$router.push('/');

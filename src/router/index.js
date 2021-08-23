@@ -14,6 +14,8 @@ export default createRouter({
     {
       path: "/add",
       component: Add,
+      name: "Add",
+      props: true,
     },
     {
       path: "/read",

@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="btn-container">
-      <RouterLink to="/add">
+      <RouterLink :to="{name: 'Add', params: {mode: 'add'}}">
         <button>글쓰기</button>
       </RouterLink>
     </div>
@@ -38,6 +38,7 @@ export default {
         this.$router.push({
           name: 'Read',
           params: {
+            id: data.id,
             title: data.title,
             description: data.description
           }
