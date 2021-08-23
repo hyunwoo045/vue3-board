@@ -470,3 +470,33 @@ router.post("/", function (req, res) {
   }
 });
 ```
+
+### Delete
+
+글 상세보기 페이지에서 삭제 버튼을 클릭할 시 데이터베이스에서 데이터를 삭제하도록 구현합니다.
+
+```html
+<script>
+  export default {
+    methods: {
+      async deleteHandler() {
+        let id = this.$route.params.id;
+        await this.$http.post('/api/delete', { id })
+        this.$router.push('/')
+      }
+    }
+
+  }
+```
+
+- 글 목록에서 상세보기 페이지로 이동하며 전달받은 글의 id 값을 POST 요청하며 함께 전송합니다.
+- 요청이 끝나기를 기다리다가 홈 페이지로 이동하도록 동기화 합니다.
+
+백엔드 파트에서는 간단히 id 값을 받아 해당 글을 삭제하는 기능을 합니다.
+
+```javascript
+connection.query(`DELETE FROM topic WHERE id=${id}`, (err) => {
+  if (err) throw err;
+  res.send("Delete Completed");
+});
+```

@@ -36,8 +36,10 @@ export default {
         },
       })
     },
-    deleteHandler() {
-      console.log('Delete')
+    async deleteHandler() {
+      let id = this.$route.params.id;
+      await this.$http.post('/api/delete', { id })
+      this.$router.push('/')
     }
   }
 }
