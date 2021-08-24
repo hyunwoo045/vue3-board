@@ -1,6 +1,12 @@
 <template>
-  <Header />
-  <RouterView />
+  <div>
+    <header>
+      <Header />
+    </header>
+    <section>
+      <RouterView />
+    </section>
+  </div>
 </template>
 
 <script>

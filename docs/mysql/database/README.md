@@ -309,3 +309,103 @@ SELECT topic.id, title, description, created, name, profile FROM topic LEFT JOIN
 [설치 페이지](https://dev.mysql.com/downloads/workbench/)
 
 - 운영 체제에 맞는 프로그램을 받아 간단히 설치 가능.
+
+<br />
+
+## 데이트베이스 보안
+
+### - SQL Injection
+
+외부로부터 들어온 정보에 의해 데이터베이스가 조작되어 생기는 문제.
+
+아래의 코드는 사용자가 전송해온 URL의 쿼리로부터 id 값을 전달받아 그를 바탕으로 SQL query를 실행하는 코드이다.
+
+```javascript
+// ... connection
+const _url = req.url;
+const queryData = url.parse(_url, true).query;
+const id = queryData.id;
+
+connection.query(`SELECT * FROM contents WHERE id=${id}`, (err, contents) => {
+  if (err) throw err;
+  console.log(contents);
+});
+```
+
+```URL
+https://localhost:8080?id=1
+```
+
+위와 같이 정상적인 url 이 들어온다면 코드에 문제는 없을 것이다. 하지만 아래와 같은 url을 사용자가 입력한다면 문제가 생긴다.
+
+```URL
+https://localhost:8080?id=1;DROP TABLE contents;
+```
+
+이 때 실행될 쿼리문은 `SELECT * FROM contents WHERE id=1;DROP TABLE contents;` 로 contents 테이블의 모든 기록을 출력하고 contents 테이블을 삭제해버렸다.
+
+보간법을 사용하면 전체 문장을 한 명령으로 보기 때문에 2개의 쿼리문이 모두 동작한 것이다. 이를 방지하기 위해서 아래와 같이 코드를 수정한다.
+
+```javascript
+// ... connection
+// ... get id
+
+connection.query("SELECT * FROM contents WHERE=id=?", [id], (err, contents) => {
+  if (err) throw err;
+  console.log(contents);
+});
+```
+
+일반 문자열 내에 동적으로 바뀌는 값은 `?` 로 입력해두고 치환될 값은 `query` 메서드의 두 번째 인자에 배열로 값을 입력한다.
+
+이와 같이 코드를 작성하면 위의 공격성을 가진 url 이 들어오더라도 아래와 같은 쿼리가 실행된다.
+
+```SQL
+SELECT * FROM contents WHERE id='1;DROP TABLE contents;';
+```
+
+치환된 값을 문자열로 인식하기 때문에 `;` 뒤의 명령 또한 문자열로 입력되고, id 필드는 INT(11) 이므로 에러가 발생하게 된다.
+
+<br />
+
+### - Escaping
+
+공격적 의도를 가진 javascript 코드를 작성하고 이를 웹 브라우저로 실행할 때 공격목적을 달성하는 공격 기법을 Cross site scripting (XSS) 이라고 한다.
+
+아래와 같은 코드가 있다고 하자.
+
+```javascript
+// ... get title, description by POST
+const title = req.body.title;
+const description = req.body.description;
+
+const template = `
+<div class="title"> ${title} </div>
+<div class="description"> ${description} </div>
+`;
+// ... render template
+```
+
+그리고 사용자가 아래와 같이 description 을 작성했다고 한다.
+
+```
+제목: XSS
+내용:
+<script>
+  alert('HaHa ha!!!')
+</script>
+```
+
+이 내용을 받고 랜더링 된다면 실제로 자바스크립트 코드가 실행되고 알림창이 뜨는 것을 볼 수 있다.
+
+이를 미연에 방지해야 한다.
+
+방지하는 법
+
+- Sanitize
+
+```
+$ npm i sanitize-html
+```
+
+위 패키지를 이용하여 사전에 작성되지 않은 위험한 Javascript 코드가 사용자 입력으로 들어오게 되면 코드를 실행하지 않고 탈출(Escaping)하는 기법을 적용한다.
