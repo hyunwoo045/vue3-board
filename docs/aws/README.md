@@ -21,7 +21,7 @@ Window Server 2012 가 설치 되어 있는 인스턴스는 1년간 무료. 하�
 
 여기서부터 아래의 내용은 어떤 인스턴스를 선택하더라도 비슷하다. 참고하자.
 
-![Create Instance 1]('markdown/createinstance_1.png')
+![Create Instance 1]('./createinstance_1.png')
 
 2. 인스턴스 유형을 선택 (Instane Type).
 
@@ -39,13 +39,13 @@ g 로 시작하는 것은 GPU에 우위가 있다.
 
 - CPU 1대, 메모리는 1GB 를 사용하는 인스턴스(Free tier)를 사용한다.
 
-![Create Instance 2]('markdown/createinstance_2.png')
+![Create Instance 2]('./createinstance_2.png')
 
 3. 인스턴스 세부 정보 구성
 
 - 컴퓨터를 1대만 생성하겠다는 '인스턴스 개수'에 1를 입력해둔다.
 
-![Create Instance 2]('markdown/createinstance_3.png')
+![Create Instance 2]('./createinstance_3.png')
 
 4. 스토리지 추가
 
@@ -61,7 +61,7 @@ g 로 시작하는 것은 GPU에 우위가 있다.
 - 보안 그룹 이름에 Web server 를 쓴다
 - HTTP 를 규칙에 추가한다.
 
-![Create Instance 2]('markdown/createinstance_4.png')
+![Create Instance 2]('./createinstance_4.png')
 
 7. Create a new key pair
 
