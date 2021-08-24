@@ -12,13 +12,32 @@ EC2 (Elastic Compute Cloud): 독립된 컴퓨터를 임대해주는 서비스.
 
 1. 사용할 인스턴스를 선택.
 
+유닉스를 기반으로 하는 LINUX, WINDOW 등이 있다.
+아마존에서 제공하는 것은 LINUX 고, 아마존이 직접 수정해서 아마존 서비스에 최적화한 Amazon LINUX 를 제공한다. 기타 Red Hat, SUSE Linux, Ubuntu 도 제공하고 있다. 이들은 1년간 무료이다.
+
+Window Server 2012 가 설치 되어 있는 인스턴스는 1년간 무료. 하지만 나머지 SQL Server 가 설치되어 있는 인스턴스들은 무료가 아니다. SQL은 데이터베이스이고 Microsoft 의 데이터베이스의 가격 정책에 의해 매우 비싸다.
+
 - 그 중에서 Ubuntu 를 사용해본다.
+
+여기서부터 아래의 내용은 어떤 인스턴스를 선택하더라도 비슷하다. 참고하자.
 
 ![Create Instance 1]('./markdown/createinstance_1.png')
 
-2. 인스턴스 유형을 선택.
+2. 인스턴스 유형을 선택 (Instane Type).
 
-- CPU 1대, 메모리는 1GB 를 사용하는 인스턴스를 사용한다.
+임대할 컴퓨터의 사양을 선택하는 페이지이다.
+
+| vCPUs                   | Memory      | Instance Storage(GB) | EBS-Optimized Available | Network Performance |
+| ----------------------- | ----------- | -------------------- | ----------------------- | ------------------- |
+| CPU의 개수 (v: virtual) | 메모리 용량 | -                    | -                       | 네트워크의 성능     |
+
+Type에 m 으로 시작하는 것은 Memory에 우위가 있고 <br />
+c 로 시작하는 것은 CPU에 우위가 있고 <br />
+g 로 시작하는 것은 GPU에 우위가 있다.
+
+환경에 알맞는 유형을 선택하도록 한다.
+
+- CPU 1대, 메모리는 1GB 를 사용하는 인스턴스(Free tier)를 사용한다.
 
 ![Create Instance 2]('./markdown/createinstance_2.png')
 
